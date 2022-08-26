@@ -14,6 +14,11 @@ variable "server_from_port" {
   default     = 8080
 }
 
+output "server_public_ip" {
+  value       = aws_instance.example.public_ip
+  description = "The public IP address of the web server"
+}
+
 resource "aws_instance" "example" {
   # Ubuntu 22.04 x86
   ami                    = "ami-02f3416038bdb17fb"
