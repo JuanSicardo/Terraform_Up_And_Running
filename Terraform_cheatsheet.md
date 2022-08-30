@@ -7,7 +7,7 @@ Commands
 ### Init
 
 Creates all the necessary files to work with Terraform and downloads the
-references providers.
+references providers. It also configures your backend.
 
 ```shell
 terraform init
@@ -52,6 +52,21 @@ terraform destroy
 
 Syntax
 ------
+
+### Configuration
+
+Terraform configuration is done through the `terraform` block:
+
+```hcl
+terraform {
+  backend "<BACKEND_NAME>" {
+    [CONFIG...]
+  }
+}
+```
+
+Some useful configurations can be:
+* `backend`: lets you indicate a remote backend for Terraform.
 
 ### Providers
 
@@ -181,13 +196,40 @@ data "<PROVIDER>_<TYPE>" "<NAME>" {
 }
 ```
 
-This returns an object with different attributes. Here arguments are commonly filters that tell the provider which object you want to retrieve.
+This returns an object with different attributes. Here arguments are commonly
+filters that tell the provider which object you want to retrieve.
 
 To retrieve the value of an attribute form a data source:
 
 ```hcl
 data.<PROVIDER>_<TYPE>.<NAME>.<ATTRIBUTE>
 ```
+
+### Lifecycle
+
+In terraform you can use the parameter `lifecycle` to indicate special behaviors
+for your resources related to creation, modifications and destruction.
+
+```hcl
+resource "<PROVIDER>_<TYPE>" "<NAME>" {
+  argument1 = "value1"
+  argument2 = "value2"
+
+  lifecycle {
+    lifecycle_argument1 = "value"
+    lifecycle_argument2 = "value"
+  }
+}
+```
+
+Useful lifecycle arguments:
+
+* `create_before_destroy`: when a resource need to be destroyed and recreated,
+  this argument instructs Terraform to first create the new resource and then
+  destroy the original.
+* `prevent_destroy`: this argument instructs Terraform to prevent the
+  destruction of this resource. If there is an attempt to destroy this resource,
+  terraform will exit with an error.
 
 Notes
 -----
