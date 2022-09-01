@@ -50,6 +50,49 @@ Destroys all the tracked resources.
 terraform destroy
 ```
 
+Workspaces
+----------
+
+Terraform allows you to isolate your states by creating workspaces. Each
+workspace has its own `.tfstate` file.
+
+### Create
+
+To create a new workspace use:
+
+```shell
+terraform workspace new WORKSPACE_NAME
+```
+
+### Show
+
+To see which workspace you are currently using, use:
+
+```shell
+terraform workspace show
+```
+
+### List
+
+To see all existing workspaces use:
+
+```shell
+terraform workspace list
+```
+
+### Select
+
+To switch from one workspace to another use:
+
+```shell
+terraform workspace select WORKSPACE_NAME
+```
+
+### Reading workspace from HCL
+
+To refer to the current workspace from inside HCL code you can use the
+property `terraform.workspace`
+
 Syntax
 ------
 
@@ -60,12 +103,15 @@ Terraform configuration is done through the `terraform` block:
 ```hcl
 terraform {
   backend "<BACKEND_NAME>" {
-    [CONFIG...]
-  }
+[
+CONFIG...
+]
+}
 }
 ```
 
 Some useful configurations can be:
+
 * `backend`: lets you indicate a remote backend for Terraform.
 
 ### Providers
