@@ -14,11 +14,11 @@ resource "aws_launch_configuration" "example" {
   instance_type   = "t2.micro"
   security_groups = [aws_security_group.instance.id]
 
-  user_data = <<-EOF
-              #!/bin/bash
-              echo "Hello, World" > index.html
-              nohup busybox httpd -f -p ${var.server_to_port} &
-              EOF
+  user_data = templatefile("user-data.sh", {
+    server_port = var.server_to_port
+    db_address  = data.terraform_remote_state.db.outputs.address
+    db_port     = data.terraform_remote_state.db.outputs.port
+  })
 
   lifecycle {
     create_before_destroy = true
@@ -43,16 +43,16 @@ resource "aws_autoscaling_group" "example" {
 }
 
 resource "aws_lb" "example" {
-  name = "terraform-asg-example"
+  name               = "terraform-asg-example"
   load_balancer_type = "application"
-  subnets = data.aws_subnets.default.ids
-  security_groups = [aws_security_group.alb.id]
+  subnets            = data.aws_subnets.default.ids
+  security_groups    = [aws_security_group.alb.id]
 }
 
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.example.arn
-  port = 80
-  protocol = "HTTP"
+  port              = 80
+  protocol          = "HTTP"
 
   default_action {
     type = "fixed-response"
@@ -60,7 +60,7 @@ resource "aws_lb_listener" "http" {
     fixed_response {
       content_type = "text/plain"
       message_body = "404: page not found"
-      status_code = "404"
+      status_code  = "404"
     }
   }
 }
