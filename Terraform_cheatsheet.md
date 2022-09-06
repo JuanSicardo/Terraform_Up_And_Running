@@ -50,6 +50,14 @@ Destroys all the tracked resources.
 terraform destroy
 ```
 
+### Console
+
+Opens up an interactive read-only console that can be used to execute some basic commands and functions:
+
+```shell
+terraform console
+```
+
 Workspaces
 ----------
 
@@ -103,10 +111,9 @@ Terraform configuration is done through the `terraform` block:
 ```hcl
 terraform {
   backend "<BACKEND_NAME>" {
-[
-CONFIG...
-]
-}
+    argument1 = "value1"
+    argument2 = "value2"
+  }
 }
 ```
 
@@ -249,6 +256,23 @@ To retrieve the value of an attribute form a data source:
 
 ```hcl
 data.<PROVIDER>_<TYPE>.<NAME>.<ATTRIBUTE>
+```
+
+A special datasource is the `terraform_remote_state`, you can use it to fethc
+the Terrafrom state file stored by another set of Terraform configurations in a
+read-only manner.
+
+To read data from the `terraform_remote_state` you may use the following statement:
+
+```hcl
+data.terraform_remote_state.<NAME>.outputs.<ATTRIBUTE>
+```
+
+### Functions
+
+Terraform includes a number of built-in functions that you can execute using an expression of the form:
+```hcl
+function_name(...)
 ```
 
 ### Lifecycle
