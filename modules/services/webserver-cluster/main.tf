@@ -1,5 +1,5 @@
 resource "aws_security_group" "instance" {
-  name = "terraform-example-instance"
+  name = "${var.cluster_name}-instance"
 
   ingress {
     from_port   = var.server_from_port
@@ -9,7 +9,7 @@ resource "aws_security_group" "instance" {
   }
 }
 
-resource "aws_launch_configuration" "example" {
+resource "aws_launch_configuration" "web_server_cluster" {
   image_id        = "ami-02f3416038bdb17fb"
   instance_type   = "t2.micro"
   security_groups = [aws_security_group.instance.id]
@@ -25,8 +25,8 @@ resource "aws_launch_configuration" "example" {
   }
 }
 
-resource "aws_autoscaling_group" "example" {
-  launch_configuration = aws_launch_configuration.example.name
+resource "aws_autoscaling_group" "web_server_cluster" {
+  launch_configuration = aws_launch_configuration.web_server_cluster.name
   vpc_zone_identifier  = data.aws_subnets.default.ids
 
   target_group_arns = [aws_lb_target_group.asg.arn]
@@ -37,20 +37,20 @@ resource "aws_autoscaling_group" "example" {
 
   tag {
     key                 = "Name"
-    value               = "terraform-asg-example"
+    value               = "${var.cluster_name}-asg"
     propagate_at_launch = true
   }
 }
 
-resource "aws_lb" "example" {
-  name               = "terraform-asg-example"
+resource "aws_lb" "web_server_cluster" {
+  name               = "${var.cluster_name}-asg"
   load_balancer_type = "application"
   subnets            = data.aws_subnets.default.ids
   security_groups    = [aws_security_group.alb.id]
 }
 
 resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.example.arn
+  load_balancer_arn = aws_lb.web_server_cluster.arn
   port              = 80
   protocol          = "HTTP"
 
@@ -66,7 +66,7 @@ resource "aws_lb_listener" "http" {
 }
 
 resource "aws_security_group" "alb" {
-  name = "terraform-example-alb"
+  name = "${var.cluster_name}-alb"
 
   # Allow inbound HTTP requests
   ingress {
@@ -86,7 +86,7 @@ resource "aws_security_group" "alb" {
 }
 
 resource "aws_lb_target_group" "asg" {
-  name     = "terraform-asg-example"
+  name     = "${var.cluster_name}-asg"
   port     = var.server_from_port
   protocol = "HTTP"
   vpc_id   = data.aws_vpc.default.id
