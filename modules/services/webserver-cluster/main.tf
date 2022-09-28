@@ -11,7 +11,7 @@ resource "aws_security_group" "instance" {
 
 resource "aws_launch_configuration" "web_server_cluster" {
   image_id        = "ami-02f3416038bdb17fb"
-  instance_type   = "t2.micro"
+  instance_type   = var.instance_type
   security_groups = [aws_security_group.instance.id]
 
   user_data = templatefile("user-data.sh", {
@@ -32,8 +32,8 @@ resource "aws_autoscaling_group" "web_server_cluster" {
   target_group_arns = [aws_lb_target_group.asg.arn]
   health_check_type = "ELB"
 
-  min_size = 2
-  max_size = 10
+  min_size = var.min_size
+  max_size = var.max_size
 
   tag {
     key                 = "Name"
