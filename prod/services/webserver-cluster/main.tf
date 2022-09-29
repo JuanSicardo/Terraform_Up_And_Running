@@ -3,11 +3,11 @@ module "webserver_cluster" {
 
   cluster_name           = "webservers-prod"
   db_remote_state_bucket = "juan-sicardo-terraform-up-and-running-tfstates"
-  db_remote_state_key    = "global/s3/terraform.tfstate"
+  db_remote_state_key    = "prod/data-stores/mysql/terraform.tfstate"
 
   instance_type = "m4.large"
-  max_size      = 2
-  min_size      = 10
+  min_size      = 2
+  max_size      = 10
 }
 
 resource "aws_autoscaling_schedule" "scale_out_during_business_hours" {

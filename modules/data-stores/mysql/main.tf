@@ -1,10 +1,10 @@
 resource "aws_db_instance" "mysql_db" {
-  identifier_prefix   = "${var.db_name}-db"
+  identifier_prefix   = "${var.db_name}"
   engine              = "mysql"
   allocated_storage   = 10
   instance_class      = "db.t2.micro"
   skip_final_snapshot = true
-  db_name             = "${var.db_name}-db"
+  db_name             = "${var.db_name}"
 
   # How should we set the username and password?
   username = var.db_username
